@@ -1,0 +1,88 @@
+title:                    Oro Application installation
+
+wait:                     Waiting
+progress:                 In progress...
+passed:                   Done
+failed:                   Failed
+skipped:                  Skipped
+
+form:
+    configuration:
+        database:
+            header:       MySQL database connection
+            driver:       Driver
+            host:         Host
+            port:         Port
+            user:         User
+            password:     Password
+            name:         Name
+            drop_full:    Drop Full Database
+        mailer:
+            header:       Mailer settings
+            host:         Host
+            port:         Port
+            encryption:   Encryption
+            user:         User
+            password:     Password
+            transport:    Transport
+        system:
+            header:       System settings
+            secret:       Secret
+            locale:       Locale
+        websocket:
+            header:       Websocket connection
+            host:         Host
+            port:         Port
+    setup:
+        email:             Email
+        organization_name: Organization name
+        application_url:   Application URL
+        username:          Username
+        firstname:         First name
+        lastname:          Last name
+        password:          Password
+        password_re:       Re-enter password
+        load_fixtures:     Load Sample Data
+
+
+process:
+    step:
+        check:
+            header:        System requirements check
+        configure:
+            header:        Configuration
+        schema:
+            header:        Database initialization
+            cache:         Clear cache before database initialization
+            clear-config:  Clear entities cache
+            clear-extend:  Clear extended entities data
+            schema-drop:   Drop current schema
+            schema-update: Schema update
+            fixtures:      Load fixtures
+            workflows:     Load workflow definitions
+            processes:     Load processes configuration
+        setup:
+            header:        Administration setup
+        installation:
+            header:        Installation
+            fixtures:      Load sample data
+            navigation:    Init navigation
+            js-routing:    Dump JS routing
+            localization:  Dump localization
+            assets:        Install assets
+            assetic:       Dump assetic
+            translation:   Prepare translations
+            requirejs:     Optimize JS resources (optional)
+            finish:        Clear cache to finalize installation
+        final:
+            header:        Finish
+            greeting:      Success!!!
+            content:       You are now ready to start using Oro.<br>For help please join our community <a href="http://www.orocrm.com/forums">forums</a>.
+    button:
+        back:              Back
+        next:              Next
+        install:           Install
+        finish:            Launch application
+    operation:             Operation
+    status:                Status
+

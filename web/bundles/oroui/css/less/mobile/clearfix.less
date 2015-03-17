@@ -1,0 +1,116 @@
+& {
+  min-width: inherit;
+  font-size: @baseFontSize;
+}
+
+.btn-group > .dropdown-menu li a {
+  font-size: @baseFontSize;
+}
+
+.container,
+.navbar-static-top .container,
+.navbar-fixed-top .container,
+.navbar-fixed-bottom .container,
+.popup-box-errors {
+  width: auto;
+}
+
+.form-horizontal .control-group {
+  max-width: auto;
+  margin: 0 0 7px;
+}
+
+.form-horizontal .control-group label.control-label {
+  float: none;
+  text-align: left;
+}
+
+.form-horizontal .control-group .controls {
+  margin-left: 0px;
+}
+
+.pin-bar, #bookmark-buttons, #breadcrumb {
+  display: none !important;
+}
+#flash-messages {
+  .flash-messages-frame {
+    left: 50%;
+    min-width: 300px;
+  }
+  .flash-messages-holder {
+    position: absolute;
+    left: -50%;
+    width: 100%;
+  }
+  .alert .close {
+    font-size: 25px;
+  }
+}
+
+.scrollspy-nav, .scrollspy-nav-target {
+  display: none;
+}
+
+&.error-page {
+  #container {
+    position: inherit;
+    .popup-frame {
+      position: inherit;
+    }
+    .popup-holder {
+      position: inherit;
+      margin: 0;
+    }
+  }
+}
+
+#progressbar {
+  margin-top: 100px;
+  width: 200px
+}
+
+.ui-dialog {
+  max-width: 100%;
+  overflow: visible;
+  .form-dialog {
+    min-width: initial !important;
+  }
+}
+
+#footer {
+  display: none;
+}
+
+.modal {
+  width: 100%;
+  height: 100%;
+  top:0;
+  left: 0;
+  right: 0;
+  margin-left: auto;
+  margin-right: auto;
+  overflow-x: hidden;
+  overflow-y: auto;
+  .modal-header, .modal-footer {
+    position: absolute;
+    width: 100%;
+    z-index: 1;
+  }
+  .modal-header {
+    top: 0px;
+  }
+  .modal-footer {
+    bottom: 0px;
+  }
+  .modal-body {
+    max-height: 100%;
+    padding-bottom: 55px;
+    padding-top: 37px;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+}
+
+fieldset {
+  min-width: 100%;
+}

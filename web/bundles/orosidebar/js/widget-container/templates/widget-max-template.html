@@ -1,0 +1,31 @@
+<div class="sidebar-widget">
+    <div class="sidebar-widget-header">
+        <span class="sidebar-widget-header-title">
+            <a href="#" class="sidebar-widget-header-toggle">
+                <i class="icon-caret-down"></i>
+            </a>
+            <% if (iconClass) { %>
+                <i class="<%= iconClass %>" title="<%= title %>"></i>
+            <% } else { %>
+                <img src="<%= icon %>" alt="<%= title %>" title="<%= title %>"/>
+            <% } %>
+            <span class="widget-title"><%= title %></span>
+        </span>
+        <span class="sidebar-widget-header-wrap">
+            <a href="#" class="sidebar-widget-refresh">
+                <i class="icon-refresh"></i>
+            </a>
+            <a href="#" class="sidebar-widget-settings">
+                <i class="icon-cog"></i>
+            </a>
+            <a href="#" class="sidebar-widget-remove">
+                <i class="icon-trash"></i>
+            </a>
+            <a href="#" class="sidebar-widget-close">
+                <i class="icon-remove"></i>
+            </a>
+        </span>
+    </div>
+    <div class="sidebar-widget-content">
+    </div>
+</div>

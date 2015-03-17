@@ -1,0 +1,72 @@
+connector:
+    name: oro_importexport
+    jobs:
+        mage_customer_import:
+            title: "Customer import from Magento"
+            type:  import
+            steps:
+                import:
+                    title:     import
+                    class:     Oro\Bundle\BatchBundle\Step\ItemStep
+                    services:
+                        reader:    orocrm_magento.mage.customer_connector
+                        processor: oro_importexport.processor.import_delegate
+                        writer:    orocrm_magento.writer.proxy_entity_writer
+                    parameters:
+                        batch_size: 25
+
+        mage_customer_reverse_sync:
+            title: "Customer's updates push to Magento"
+            type:   export
+            steps:
+                export:
+                    title: export
+                    class: Oro\Bundle\BatchBundle\Step\ItemStep
+                    services:
+                        reader:    oro_integration.reader.entity.by_id
+                        processor: orocrm_magento.importexport.customer.reverse.processor
+                        writer:    orocrm_magento.importexport.customer.reverse.writer
+                    parameters:
+                        batch_size: 100
+
+        mage_region_import:
+            title: "Region import from Magento"
+            type:  import
+            steps:
+                import:
+                    title:     import
+                    class:     Oro\Bundle\BatchBundle\Step\ItemStep
+                    services:
+                        reader:    orocrm_magento.mage.region_connector
+                        processor: oro_importexport.processor.import_delegate
+                        writer:    orocrm_magento.writer.proxy_entity_writer
+                    parameters:
+                        batch_size: 100
+
+        mage_order_import:
+            title: "Order import from Magento"
+            type:  import
+            steps:
+                import:
+                    title:     import
+                    class:     Oro\Bundle\BatchBundle\Step\ItemStep
+                    services:
+                        reader:    orocrm_magento.mage.order_connector
+                        processor: oro_importexport.processor.import_delegate
+                        writer:    orocrm_magento.writer.proxy_entity_writer
+                    parameters:
+                        batch_size: 25
+
+        mage_cart_import:
+            title: "Cart(quote) import from Magento"
+            type:  import
+            steps:
+                import:
+                    title:     import
+                    class:     Oro\Bundle\BatchBundle\Step\ItemStep
+                    services:
+                        reader:    orocrm_magento.mage.cart_connector
+                        processor: oro_importexport.processor.import_delegate
+                        writer:    orocrm_magento.writer.proxy_entity_writer
+                    parameters:
+                        batch_size: 25

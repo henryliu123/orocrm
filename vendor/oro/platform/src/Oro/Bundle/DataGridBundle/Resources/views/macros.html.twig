@@ -1,0 +1,33 @@
+{#
+    Renders datagrid widget
+
+    parameters:
+        name: datagrid name
+        params: additional parameters for url
+        renderParams: parameters for grid UI
+#}
+{% macro renderGrid(name, params = {}, renderParams = {}) %}
+    {% set datagrid = oro_datagrid_build(name, params) %}
+    {% if datagrid %}
+        {% set metaData = oro_datagrid_metadata(datagrid, params) %}
+        {% if renderParams.routerEnabled is defined %}
+            {% set metadataOptions = metaData.options is defined ? metaData.options : {} %}
+            {% set metadataOptions = metadataOptions|merge({'routerEnabled': renderParams.routerEnabled}) %}
+            {% set metaData = metaData|merge({'options': metadataOptions}) %}
+        {% endif %}
+        {% set data     = oro_datagrid_data(datagrid) %}
+        {% set gridId   = oro_datagrid_generate_element_id(datagrid) %}
+        {% set options  = {
+            el: '#' ~ gridId,
+            gridName: oro_datagrid_build_fullname(datagrid.name, datagrid.scope),
+            builders: metaData.requireJSModules,
+            metadata: metaData,
+            data: data
+        } %}
+
+        <div id="{{ gridId }}"
+             data-page-component-module="orodatagrid/js/app/components/datagrid-component"
+             data-page-component-options="{{ options|json_encode }}"
+             {% if renderParams.cssClass is defined %} class="{{ renderParams.cssClass }}" {% endif %}></div>
+    {% endif %}
+{% endmacro %}

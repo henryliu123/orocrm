@@ -1,0 +1,83 @@
+oro:
+    query_designer:
+        aggregates:
+            identifier:
+                Count:
+                    name: Count
+                    hint: Number of items
+            string:
+                Count:
+                    name: Count
+                    hint: Number of items
+            number:
+                Count:
+                    name: Count
+                    hint: Number of items
+                Sum:
+                    name: Sum
+                    hint: Sum of all values
+                Avg:
+                    name: Average
+                    hint: Average of values
+                Min:
+                    name: Min
+                    hint: Minimum value
+                Max:
+                    name: Max
+                    hint: Maximum value
+
+    report:
+        menu:
+            manage_reports.label:   Manage Custom Reports
+        type:
+            table: Table
+        datagrid:
+            column:
+                name:               Name
+                entity:             Entity
+                report_type:        Report type
+        form:
+            designer:               Designer
+            chart_designer:         Chart Designer
+            columns:                Columns
+            grouping:               Grouping
+            filters:                Filters
+            choose_report_type:     Choose a report type...
+
+        chart_options.label: Chart Options
+        definition.label:    Definition
+        description.label:   Description
+        entity.label:        Entity
+        entity_label:        Report
+        entity_description:  Represent Report
+        entity_plural_label: Reports
+        id.label:            Id
+        name.label:          Name
+        owner.label:         Owner
+        type.label:          Report type
+        organization.label:  Organization
+
+        reporttype:
+            entity_label:        Report Type
+            entity_plural_label: Report Types
+            entity_description:  Represent Report Type
+            name.label:          Name
+            label.label:         Label
+            chart.label:         Chart
+            hasChart:
+                label:   Report design
+                tooltip: Add chart to the report
+
+"New Report": New Report
+"Manage Custom Reports": Manage Custom Reports
+"Manage Custom Reports - Reports": Manage Custom Reports - Reports
+"Create Report - Reports": Create Report - Reports
+"%report.name% - Edit - Reports": %report.name% - Edit - Reports
+"%report.name% - Reports": %report.name% - Reports
+
+"Edit report": Edit report
+"Delete report": Delete report
+"Are you sure you want to delete this report?": Are you sure you want to delete this report?
+"Report deleted": Report deleted
+"Report saved": Report saved
+"Invalid report configuration": No data to show. Please go to the edit report page and make sure the report was configured properly.

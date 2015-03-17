@@ -1,0 +1,17 @@
+oro_menu_config:
+    tree:
+        application_menu:
+            type: application_menu
+
+        shortcuts:
+            type: shortcuts
+
+oro_navigation_elements:
+    favoriteButton:
+        default: true
+        routes:
+            call_list: false
+    shortcutsPanel:
+        default: false
+        routes:
+            call_list: true

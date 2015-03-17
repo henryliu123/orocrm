@@ -1,0 +1,131 @@
+Add another email: Add another email
+Additional: Additional
+
+"%groups% and %roles%": "%groups% and %roles%"
+
+oro.user.form.choose_user: Choose a user...
+oro.user.form.choose_gender: Choose a gender...
+oro.user.gender.male: Male
+oro.user.gender.female: Female
+
+Login: Login
+Logout: Logout
+Login page: Login page
+"Bad credentials": "Invalid user name or password."
+"Forgot Password": "Forgot Password"
+"Password Reset": "Password Reset"
+"Reset password": "Reset password"
+"Generate key was successful. New key:": "Generate key was successful. New key&#58;"
+"Generate key": "Generate key"
+"Access Settings": "Access Settings"
+"Organization": "Organization"
+"Business Unit": "Business Unit"
+"User": "User"
+"None": "None"
+
+change_password:
+    flash:
+        success: The password has been changed
+resetting:
+    flash:
+        success: The password has been successfully reset
+
+oro:
+    user:
+        form:
+            access_settings.label: Business Units
+        menu:
+            system_tab.label: System
+            user_list.description: List of system users
+            user_roles.description: List of system roles
+            user_groupes.description: List of system groups
+            users_management.label: User Management
+            user_create.label: Create User
+            shortcut_new_user.label: Create new user
+            shortcut_new_user.description: Create new user instance
+            shortcut_list_users.label: Show users list
+            shortcut_list_users.description: List of all system users
+            shortcut_new_role.label: Create new role
+            shortcut_new_role.description: Create new role instance
+            shortcut_new_group.label: Create new group
+            shortcut_new_group.description: Create new group instance
+            oro_user_profile_view.label: My User
+        controller:
+            group.message.saved: "Group saved"
+            role.message.saved: "Role saved"
+            user.message.saved: "User saved"
+            status.message.saved: "Status saved"
+            invite.fail.message: An invitation email sending was failed
+        #
+        # Oro/Bundle/UserBundle/Entity/User
+        #
+        api_keys.label:              API keys
+        api.label:                   API key
+        birthday.label:              Birthday
+        business_units.label:        Business Units
+        organizations.label:         Organizations
+        confirmation_token.label:    Confirmation token
+        current_status.label:        Current status
+        groups.label:                Groups
+        email.label:                 Primary Email
+        email_origins.label:         Email Origins
+        emails.label:                Emails
+        enabled.label:               Status
+        entity_description:          Represent user profile
+        entity_label:                User
+        entity_plural_label:         Users
+        first_name.label:            First name
+        id.label:                    Id
+        avatar.label:                Avatar
+        imap_configuration.label:    Email synchronization settings
+        last_login.label:            Last logged in
+        last_name.label:             Last name
+        login_count.label:           Login count
+        middle_name.label:           Middle name
+        name_prefix.label:           Name prefix
+        name_suffix.label:           Name suffix
+        owner.label:                 Owner
+        password.label:              Password
+        password_re.label:           Re-enter password
+        password_requested_at.label: Password requested at
+        new_password.label:          New password
+        new_password_re.label:       Repeat new password
+        roles.label:                 Roles
+        salt.label:                  Salt
+        statuses.label:              Statuses
+        username.label:              Username
+        organization.label:          Organization
+
+        # extended field added in migrations
+        title.label:                 Title
+
+        #
+        # Oro/Bundle/UserBundle/Entity/Group
+        #
+        group:
+            entity_label:        Group
+            entity_plural_label: Groups
+            entity_description:  Group of roles
+            id.label:    Id
+            name.label:  Name
+            roles.label: Roles
+            owner.label: Owner
+            organization.label: Organization
+            has_group.label: Has group
+        #
+        # Oro/Bundle/UserBundle/Entity/Role
+        #
+        role:
+            entity_label:        Role
+            entity_plural_label: Roles
+            entity_description:  User's role
+            id.label:     Id
+            role.label:   Role
+            label.label:  Label
+            owner.label:  Owner
+            has_role.label: Has role
+        invite:
+            label: Send an Email Invitation
+        privileges:
+            entity.label: Entity
+            action.label: Capabilities

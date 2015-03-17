@@ -1,0 +1,33 @@
+oro_system_configuration:
+    groups:
+        email_notifications_settings:
+            title: oro.notification.system_configuration.title
+
+    fields:
+        oro_notification.email_notification_sender_email:
+            data_type: string
+            type: email
+            options:
+                label: oro.notification.system_configuration.email_notification_sender_email
+        oro_notification.email_notification_sender_name:
+            data_type: string
+            type: text
+            options:
+                label: oro.notification.system_configuration.email_notification_sender_name
+    tree:
+        system_configuration:
+            platform:
+                children:
+                    general_setup:
+                        children:
+                            email_configuration:
+                                children:
+                                    email_notifications_settings:
+                                        children:
+                                            - oro_notification.email_notification_sender_email
+                                            - oro_notification.email_notification_sender_name
+
+    api_tree:
+        email_configuration:
+            oro_notification.email_notification_sender_email: ~
+            oro_notification.email_notification_sender_name: ~

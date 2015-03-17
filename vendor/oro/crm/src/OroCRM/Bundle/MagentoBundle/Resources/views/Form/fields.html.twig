@@ -1,0 +1,83 @@
+{% block orocrm_magento_soap_transport_check_button_widget %}
+    {% set modificationAreAllowed = form.parent.websiteId.vars.disabled is not defined or form.parent.websiteId.vars.disabled == false %}
+    <div class="control-group">
+        <div class="controls">
+            <button type="{{ type|default('button') }}" {{ block('button_attributes') }}>{{ label|trans({}, translation_domain) }}</button>
+            <script type="text/javascript">
+                require(['orocrm/magento/soap-checker'], function (SoapChecker) {
+                    "use strict";
+
+                    new SoapChecker({
+                        el:                          '#{{ form.vars.id }}',
+                        transportEntityId:           {{ form.parent.vars.value ? form.parent.vars.value.id|json_encode|raw : 'null' }},
+                        websiteSelectEl:             '#{{ form.parent.websiteId.vars.id }}',
+                        websitesListEl:              '#{{ form.parent.websites.vars.id }}',
+                        websitesModificationAllowed: {{ modificationAreAllowed|json_encode|raw }},
+                        isExtensionInstalledEl:      '#{{ form.parent.isExtensionInstalled.vars.id }}',
+                        connectorsEl:                '#{{ form.parent.parent.connectors.vars.id }}',
+                        adminUrlEl:                  '#{{ form.parent.adminUrl.vars.id }}'
+                    });
+                });
+            </script>
+        </div>
+    </div>
+{% endblock %}
+
+{% block orocrm_magento_soap_transport_check_button_row %}
+    {{ block('button_row') }}
+{% endblock %}
+
+{% block orocrm_magento_website_select_row %}
+    {% spaceless %}
+        <div class="control-group{% if attr.class is defined %} {{ attr.class }}{% endif %}">
+            {% if label is not sameas(false) %}
+                {{ form_label(form, '' , { label_attr: label_attr|merge({ class: 'control-label' })}) }}
+            {% endif %}
+            <div class="controls{% if errors|length > 0 %} validation-error{% endif %} magento-website-selector-container">
+                {{ form_widget(form) }}
+                {% if form.vars.disabled is not sameas(true) %}
+                    <a href="javascript:void(0)" class="no-hash sync-website-list-link">
+                        <i class="icon icon-refresh"></i>{{ 'Sync website list'|trans }}
+                    </a>
+                    <script type="text/javascript">
+                        require(['orocrm/magento/soap-checker'], function (SoapChecker) {
+                            "use strict";
+
+                            new SoapChecker({
+                                el:                        '.sync-website-list-link',
+                                transportEntityId:         {{ form.parent.vars.value ? form.parent.vars.value.id|json_encode|raw : 'null' }},
+                                websiteSelectEl:           '#{{ form.vars.id }}',
+                                websitesListEl:            '#{{ form.parent.websites.vars.id }}',
+                                isExtensionInstalledEl:    '#{{ form.parent.isExtensionInstalled.vars.id }}',
+                                connectorsEl:              '#{{ form.parent.parent.connectors.vars.id }}',
+                                adminUrlEl:                '#{{ form.parent.adminUrl.vars.id }}'
+                            });
+                        });
+                    </script>
+                {% endif %}
+                <div class="clear-fix"></div>
+                {{ form_errors(form) }}
+            </div>
+        </div>
+    {% endspaceless %}
+{% endblock %}
+
+{% block orocrm_magento_order_place_form_type_row %}
+    {% set cartId = form.cart_id.vars.data %}
+    {{ oro_widget_render({
+        'widgetType': 'block',
+        'alias': 'order-place-widget',
+        'url': path('orocrm_magento_orderplace_cart', {id: cartId}),
+        'loadingMaskEnabled': true
+    }) }}
+
+    <script type="text/javascript">
+        require(['underscore', 'oroui/js/widget-manager'], function(_, widgetManager) {
+            widgetManager.getWidgetInstanceByAlias('order-place-widget', function(widget) {
+                widget._showLoading();
+
+                widget.once('externalContentLoaded', _.bind(widget._hideLoading, widget));
+            });
+        });
+    </script>
+{% endblock %}

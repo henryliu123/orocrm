@@ -1,0 +1,106 @@
+parameters:
+    oro_workflow.attribute_guesser.class: Oro\Bundle\WorkflowBundle\Model\AttributeGuesser
+    oro_workflow.context_accessor.class: Oro\Bundle\WorkflowBundle\Model\ContextAccessor
+    oro_workflow.datagrid.action.workflow_activate.class: Oro\Bundle\WorkflowBundle\Datagrid\Action\WorkflowActivateAction
+    oro_workflow.entity_connector.class: Oro\Bundle\WorkflowBundle\Model\EntityConnector
+    oro_workflow.manager.class: Oro\Bundle\WorkflowBundle\Model\WorkflowManager
+    oro_workflow.process_definition.entity.class: Oro\Bundle\WorkflowBundle\Entity\ProcessDefinition
+    oro_workflow.process.process_factory.class: Oro\Bundle\WorkflowBundle\Model\ProcessFactory
+    oro_workflow.process.process_handler.class: Oro\Bundle\WorkflowBundle\Model\ProcessHandler
+    oro_workflow.process.schedule_policy.exclude_definitions.class: Oro\Bundle\WorkflowBundle\Model\ExcludeDefinitionsProcessSchedulePolicy
+    oro_workflow.process.logger.class: Oro\Bundle\WorkflowBundle\Model\ProcessLogger
+    oro_workflow.registry.class: Oro\Bundle\WorkflowBundle\Model\WorkflowRegistry
+    oro_workflow.workflow_definition.entity.class: Oro\Bundle\WorkflowBundle\Entity\WorkflowDefinition
+    oro_workflow.workflow_result.class: Oro\Bundle\WorkflowBundle\Model\WorkflowResult
+
+services:
+    oro_workflow.attribute_guesser:
+        class: %oro_workflow.attribute_guesser.class%
+        arguments:
+            - @form.registry
+            - @doctrine
+            - @oro_entity_config.provider.entity
+            - @oro_entity_config.provider.form
+        calls:
+            # mapping from doctrine type to attribute parameters
+            - [addDoctrineTypeMapping, ["string", "string"]]
+            - [addDoctrineTypeMapping, ["integer", "integer"]]
+            - [addDoctrineTypeMapping, ["smallint", "integer"]]
+            - [addDoctrineTypeMapping, ["bigint", "integer"]]
+            - [addDoctrineTypeMapping, ["boolean", "boolean"]]
+            - [addDoctrineTypeMapping, ["decimal", "float"]]
+            - [addDoctrineTypeMapping, ["date", "object", { class: "DateTime" }]]
+            - [addDoctrineTypeMapping, ["time", "object", { class: "DateTime" }]]
+            - [addDoctrineTypeMapping, ["datetime", "object", { class: "DateTime" }]]
+            - [addDoctrineTypeMapping, ["datetimetz", "object", { class: "DateTime" }]]
+            - [addDoctrineTypeMapping, ["text", "string"]]
+            - [addDoctrineTypeMapping, ["array", "array"]]
+            - [addDoctrineTypeMapping, ["simple_array", "array"]]
+            - [addDoctrineTypeMapping, ["json_array", "array"]]
+            - [addDoctrineTypeMapping, ["float", "float"]]
+            - [addDoctrineTypeMapping, ["guid", "string"]]
+            # custom types
+            - [addDoctrineTypeMapping, ["percent", "float"]]
+            - [addDoctrineTypeMapping, ["money", "float"]]
+            # mapping from attribute type to form parameters
+            - [addFormTypeMapping, ["string", "text"]]
+            - [addFormTypeMapping, ["int", "integer", { precision: 0 }]]
+            - [addFormTypeMapping, ["integer", "integer", { precision: 0 }]]
+            - [addFormTypeMapping, ["bool", "checkbox"]]
+            - [addFormTypeMapping, ["boolean", "checkbox"]]
+            - [addFormTypeMapping, ["float", "number"]]
+
+    oro_workflow.context_accessor:
+        class: %oro_workflow.context_accessor.class%
+
+    oro_workflow.datagrid.action.workflow_activate:
+        class: %oro_workflow.datagrid.action.workflow_activate.class%
+        scope: prototype
+        tags:
+            - { name: oro_datagrid.extension.action.type, type: workflow-activate }
+
+    oro_workflow.entity_connector:
+        class: %oro_workflow.entity_connector.class%
+
+    oro_workflow.manager:
+        class: %oro_workflow.manager.class%
+        arguments:
+            - @doctrine
+            - @oro_workflow.registry
+            - @oro_entity.doctrine_helper
+            - @oro_entity_config.config_manager
+
+    oro_workflow.process.process_factory:
+        class: %oro_workflow.process.process_factory.class%
+        arguments:
+            - @oro_workflow.action_assembler
+
+    oro_workflow.process.process_handler:
+        class: %oro_workflow.process.process_handler.class%
+        arguments:
+            - @oro_workflow.process.process_factory
+            - @oro_workflow.process.logger
+            - @event_dispatcher
+
+    oro_workflow.process.schedule_policy.exclude_definitions:
+        class: %oro_workflow.process.schedule_policy.exclude_definitions.class%
+        tags:
+            - { name: kernel.event_listener, event: oro_workflow.process.handle_before, method: onProcessHandleBefore }
+            - { name: kernel.event_listener, event: oro_workflow.process.handle_after_flush, method: onProcessHandleAfterFlush }
+
+    oro_workflow.process.schedule_policy:
+        alias: oro_workflow.process.schedule_policy.exclude_definitions
+
+    oro_workflow.process.logger:
+        class: %oro_workflow.process.logger.class%
+        arguments:
+            - @oro_entity.doctrine_helper
+            - @?logger
+
+    oro_workflow.registry:
+        class: %oro_workflow.registry.class%
+        arguments:
+            - @doctrine
+            - @oro_workflow.workflow_assembler
+            - @oro_entity_config.provider.workflow
+

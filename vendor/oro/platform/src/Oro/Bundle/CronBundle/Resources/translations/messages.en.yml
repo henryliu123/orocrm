@@ -1,0 +1,63 @@
+oro:
+    cron:
+        action:
+            jobs_management: Jobs management
+
+        header:
+            command:      Command
+            error:        Error output
+            id:           ID
+            jobs:         Jobs
+            memory:       Memory usage, MB
+            output:       Output
+            priority:     Priority
+            queue:        Queue
+            retry:        Retry jobs
+            runtime:      Runtime, s
+            state:        State
+            statistics:   Statistics
+            trace:        Stack trace
+            view:         View
+            job:          'Job "%name%"'
+
+        menu:
+            cron_job.description:          Cron job queue
+            cron_job.label:                Job Queue
+            cron_job_shortcut.label:       Jobs List
+            cron_job_shortcut.description: List of cron jobs
+
+        message:
+            start:
+                fail:     Failed to start daemon
+                success:  Daemon started
+            stop:
+                fail:     Failed to stop daemon
+                success:  Daemon stopped
+
+        sidebar:
+            check:        Check status
+            not_running:  Not running
+            pid:          Daemon PID
+            run:          Run daemon
+            running:      Running
+            status:       Daemon status
+            stop:         Stop daemon
+
+        view:
+            dependencies: Dendencies
+            in_deps:      Incoming Dependencies
+            original:     Original Job
+            related:      Related Entities
+            related:      Related Entities
+
+        job:
+            status:
+                new:        New
+                pending:    Pending
+                canceled:   Canceled
+                running:    Running
+                finished:   Finished
+                failed:     Failed
+                terminated: Terminated
+                incomplete: Incomplete
+                unknown:    Unknown

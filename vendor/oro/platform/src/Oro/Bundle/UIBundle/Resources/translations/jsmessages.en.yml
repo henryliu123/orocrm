@@ -1,0 +1,55 @@
+"Yes": "Yes"
+"Yes, Delete": "Yes, Delete"
+"Yes, I Agree": "Yes, I Agree"
+"Yes, do it": "Yes, do it"
+"No": "No"
+"OK, got it.": "OK, got it."
+"Cancel": "Cancel"
+"Delete Confirmation": "Delete Confirmation"
+"Edit": "Edit"
+"Loading...": "Loading..."
+"Saving...": "Saving..."
+"Deleting...": "Deleting..."
+"Unexpected error occurred. Please contact system administrator.": "Unexpected error occurred. Please contact system administrator."
+Now: Now
+Prev: Prev
+Next: Next
+Today: Today
+Wk: Wk
+Done: Done
+Close: Close
+AM: AM
+A: A
+PM: PM
+P: P
+"Choose Time": "Choose Time"
+Time: Time
+Hour: Hour
+Minute: Minute
+Second: Second
+Millisecond: Millisecond
+Microsecond: Microsecond
+"Time Zone": "Time Zone"
+"Server error": "Server error"
+"User input error": "User input error"
+"Error! Incorrect server response.": "Error! Incorrect server response."
+"Sorry, unexpected error was occurred": "Sorry, unexpected error was occurred"
+"Please select a file...": "Please select a file..."
+"Choose File": "Choose File"
+"Searching...": "Searching..."
+"No matches found": "No matches found"
+OK: OK
+"N/A": "N/A"
+maximize: maximize
+restore: restore
+minimize: minimize
+close: close
+
+oro:
+    ui:
+        widget_loading_filed: "Widget content loading failed"
+        forbidden_error: You do not have permission to perform this action.
+        unexpected_error: Unexpected error occurred. Please contact system administrator.
+        page_header:
+            button:
+                more: "More"

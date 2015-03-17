@@ -1,0 +1,3 @@
+css:
+  'oroworkflow':
+      - 'bundles/oroworkflow/css/workflow.css'

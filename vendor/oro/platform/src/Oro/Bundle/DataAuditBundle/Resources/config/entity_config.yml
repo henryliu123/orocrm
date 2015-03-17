@@ -1,0 +1,47 @@
+oro_entity_config:
+    dataaudit:
+        entity:
+            items:
+                auditable:
+                    options:
+                        priority:           60
+                        default_value:      false
+                        indexed:            true
+                    grid:
+                        type:               boolean
+                        label:              oro.dataaudit.entity_config.entity.items.auditable
+                        filter_type:        boolean
+                        required:           true
+                        sortable:           true
+                        filterable:         true
+                        show_filter:        false
+                    form:
+                        type:               choice
+                        options:
+                            choices:        ['No', 'Yes']
+                            empty_value:    false
+                            block:          other
+                            label:          oro.dataaudit.entity_config.entity.items.auditable
+        field:
+            items:
+                auditable:
+                    options:
+                        priority:           60
+                        default_value:      false
+                        allowed_type:       [string, text, integer, smallint, bigint, boolean, datetime, date, time, float, decimal, money, percent, enum, multiEnum, manyToOne, manyToMany, ref-many]
+                        indexed:            true
+                    grid:
+                        type:               boolean
+                        label:              oro.dataaudit.entity_config.field.items.auditable
+                        filter_type:        boolean
+                        required:           true
+                        sortable:           true
+                        filterable:         false
+                        show_filter:        false
+                    form:
+                        type:               choice
+                        options:
+                            choices:        ['No', 'Yes']
+                            empty_value:    false
+                            block:          other
+                            label:          oro.dataaudit.entity_config.field.items.auditable

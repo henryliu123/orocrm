@@ -1,0 +1,3 @@
+config:
+    paths:
+        'orouser/js/init-user': 'bundles/orouser/js/init-user.js'

@@ -1,0 +1,19 @@
+Oro\Bundle\ReportBundle\Entity\Report:
+    constraints:
+        - Oro\Bundle\QueryDesignerBundle\Validator\Constraints\QueryConstraint: ~
+        - Oro\Bundle\QueryDesignerBundle\Validator\Constraints\GroupingConstraint: ~
+    properties:
+        name:
+            - NotBlank:     ~
+            - Length:
+                max: 255
+        type:
+            - NotBlank:     ~
+            - Length:
+                max: 32
+        entity:
+            - NotBlank:     ~
+            - Length:
+                max: 255
+        organization:
+            - NotBlank: ~

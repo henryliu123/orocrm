@@ -1,0 +1,134 @@
+{% macro renderTransitionButton(workflow, transition, workflowItem, transitionData) %}
+    {% if transition.displayType == 'dialog' and (transitionData['dialog-url'] is not defined or not transitionData['dialog-url']) and transition.hasForm() %}
+        {% set transitionData = transitionData|merge({
+            'dialog-url': path(
+                'oro_workflow_widget_transition_form',
+                {
+                    workflowItemId: workflowItem.id,
+                    transitionName: transition.name
+                }
+            )
+        }) %}
+    {% endif %}
+
+    {% if transitionData['transition-url'] is not defined or not transitionData['transition-url'] %}
+        {% set transitionData = transitionData|merge({'transition-url':
+            path(
+                'oro_workflow_api_rest_workflow_transit',
+                {
+                    workflowItemId: workflowItem.id,
+                    transitionName: transition.name
+                }
+            )
+        }) %}
+    {% endif %}
+
+    {% if transitionData['transition-condition-messages'] %}
+        {% set conditionMessages = [] %}
+        {% for error in transitionData['transition-condition-messages'] %}
+            {% set conditionMessages = conditionMessages|merge(['<li>' ~ error.message|trans(error.parameters) ~ '</li>']) %}
+        {% endfor %}
+        {% if conditionMessages|length %}
+            {% set transitionData = transitionData|merge({
+                'transition-condition-messages': '<ol>' ~ conditionMessages|join ~ '</ol>'
+            }) %}
+        {% else %}
+            {% set transitionData = transitionData|merge({
+                'transition-condition-messages': ''
+            }) %}
+        {% endif %}
+    {% endif %}
+
+    {# Transaltions temporary disabled due to BAP-5355 #}
+    <a href="{{ transitionData['transition-url'] }}"
+        {% for key, value in transitionData %}
+            data-{{ key }}="{{ value|e('html_attr')|raw }}"
+        {% endfor %}
+        {% if transition.frontendOptions is defined and transition.frontendOptions.dialog is defined %}
+            data-dialog-options={{ transition.frontendOptions.dialog|json_encode|raw }}
+        {% endif %}
+        title="{{ transition.label }}"
+        class="btn icons-holder-text
+            {% if transition.displayType == 'dialog' %}no-hash{% endif %}
+            {% if not transitionData.enabled %}disabled{% endif %}
+            {% if transition.frontendOptions is defined and transition.frontendOptions.class is defined %}{{ transition.frontendOptions.class }}{% endif %}"
+        id="transition-{{ workflow.name }}-{{ transition.name }}">
+        {% if transition.frontendOptions is defined and transition.frontendOptions.icon is defined %}
+            <i class="{{ transition.frontendOptions.icon }}"></i>
+        {%- endif -%}
+        {{ transition.label }}
+    </a>
+{% endmacro %}
+
+{% macro renderTransitionsJs(transitionsData, blockId) %}
+    <script type="text/javascript">
+        require(['jquery', 'oroworkflow/js/transition-handler'],
+        function($, workflowTransitionHandler) {
+            'use strict';
+
+            $(function() {
+                var container = $('#{{ blockId }}');
+                {% for data in transitionsData %}
+                (function(transitionBtn) {
+                    if (transitionBtn.data('enabled')) {
+                        {% if data.transition.displayType == 'dialog' %}
+                        transitionBtn.data('executor', function() {
+                            workflowTransitionHandler.call(transitionBtn);
+                        });
+                        transitionBtn.on('click', function(e) {
+                            e.preventDefault();
+                            $(this).data('executor').call();
+                        });
+                        {% endif %}
+                        //transitionBtn.trigger('transitionHandlerInitialized');
+                    } else {
+                        transitionBtn.on('click', function(e) {
+                            e.preventDefault();
+                        });
+                        if (transitionBtn.data('transition-condition-messages')) {
+                            transitionBtn.popover({
+                                'html': true,
+                                'placement': 'bottom',
+                                'container': $('body'),
+                                'trigger': 'hover',
+                                'title': '<i class="icon-exclamation-sign"></i>' + {{ 'Unmet conditions'|trans|json_encode|raw }},
+                                'content': transitionBtn.data('transition-condition-messages')
+                            });
+                        }
+                    }
+                })(container.find('#transition-{{ data.workflow.name }}-{{ data.transition.name }}'));
+                {% endfor %}
+            });
+        });
+    </script>
+{% endmacro %}
+
+{% macro renderResetButton(data, blockId) %}
+    {% set resetButtonId = 'workflow-item-' ~ data.workflow_item_id ~ '-reset' %}
+    <a href="javascript:void(0);"
+       data-url="{{ data.url }}"
+       title="{{ data.title }}"
+       class="btn icons-holder-text btn-primary"
+       id="{{ resetButtonId }}">
+            <i class="icon-repeat"></i>
+            {{ data.title }}
+    </a>
+
+    <script type="text/javascript">
+        require(['jquery', 'oroworkflow/js/reset-handler'],
+            function($, workflowResetHandler) {
+                'use strict';
+
+                $(function() {
+                    var resetBtn = $('#{{ blockId }}').find('#{{ resetButtonId }}');
+                    resetBtn.data('executor', function() {
+                        workflowResetHandler.call(resetBtn);
+                    });
+                    resetBtn.on('click', function(e) {
+                        e.preventDefault();
+                        $(this).data('executor').call();
+                    });
+                });
+            });
+    </script>
+{% endmacro %}

@@ -1,0 +1,34 @@
+Oro\Bundle\CalendarBundle\Entity\CalendarEvent:
+    properties:
+        title:
+            - NotBlank:     ~
+            - Length:
+                max: 255
+        start:
+            - DateTime:     ~
+            - NotBlank:     ~
+            - Oro\Bundle\CalendarBundle\Validator\Constraints\DateEarlierThan: end
+        end:
+            - DateTime:     ~
+            - NotBlank:     ~
+
+Oro\Bundle\CalendarBundle\Entity\CalendarProperty:
+    properties:
+        targetCalendar:
+            - NotBlank:     ~
+        calendarAlias:
+            - NotBlank:     ~
+            - Length:
+                max: 32
+        calendar:
+            - NotBlank:     ~
+        backgroundColor:
+            - Length:
+                max: 7
+
+Oro\Bundle\CalendarBundle\Entity\SystemCalendar:
+    properties:
+        name:
+            - NotBlank:     ~
+            - Length:
+                max: 255

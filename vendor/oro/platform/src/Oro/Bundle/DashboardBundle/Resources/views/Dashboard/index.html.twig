@@ -1,0 +1,28 @@
+{% extends 'OroUIBundle:actions:index.html.twig' %}
+{% import 'OroUIBundle::macros.html.twig' as UI %}
+{% set gridName = 'dashboards-grid' %}
+
+{% set pageTitle = 'oro.dashboard.management_title'|trans %}
+
+{% block navButtons %}
+    {% if resource_granted('oro_dashboard_create') %}
+        {{ UI.addButton({
+            'path' : path('oro_dashboard_create'),
+            'entity_label': 'oro.dashboard.entity_label'|trans
+        }) }}
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+    {{ parent() }}
+    <script type="text/javascript">
+        require(
+            ['jquery', 'oroui/js/mediator', 'orodashboard/js/dashboard-util'],
+            function ($, mediator, dashboardUtil) {
+                mediator.on('datagrid:beforeRemoveRow:{{ gridName }}', function(model){
+                    dashboardUtil.onDashboardRemove(model.get('id'));
+                });
+            }
+        );
+    </script>
+{% endblock %}

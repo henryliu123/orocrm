@@ -1,0 +1,189 @@
+<?php
+
+namespace Oro\Bundle\ImapBundle\Tests\Unit\Manager\DTO;
+
+use Zend\Mail\Header\HeaderInterface;
+
+use Oro\Bundle\ImapBundle\Connector\ImapMessageIterator;
+use Oro\Bundle\ImapBundle\Manager\ImapEmailManager;
+
+class ImapEmailManagerTest extends \PHPUnit_Framework_TestCase
+{
+    /** @var ImapEmailManager */
+    private $manager;
+
+    /** @var \PHPUnit_Framework_MockObject_MockObject */
+    private $connector;
+
+    protected function setUp()
+    {
+        $this->connector = $this->getMockBuilder('Oro\Bundle\ImapBundle\Connector\ImapConnector')
+            ->disableOriginalConstructor()
+            ->getMock();
+        $this->manager = new ImapEmailManager($this->connector);
+    }
+
+    public function testSelectFolder()
+    {
+        $this->connector->expects($this->once())
+            ->method('selectFolder')
+            ->with('test');
+        $this->connector->expects($this->once())
+            ->method('getSelectedFolder')
+            ->will($this->returnValue('test'));
+
+        $this->manager->selectFolder('test');
+        $this->assertEquals('test', $this->manager->getSelectedFolder());
+    }
+
+    /**
+     * @dataProvider getEmailsProvider
+     * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
+     */
+    public function testGetEmails($strDate)
+    {
+        $toAddress = $this->getMock('Zend\Mail\Address\AddressInterface');
+        $toAddress->expects($this->once())->method('toString')->will($this->returnValue('toEmail'));
+        $toAddressList = $this->getMockForAbstractClass(
+            'Zend\Mail\Header\AbstractAddressList',
+            [],
+            '',
+            false,
+            false,
+            true,
+            ['getAddressList']
+        );
+        $toAddressList->expects($this->once())->method('getAddressList')->will($this->returnValue([$toAddress]));
+
+        $ccAddress = $this->getMock('Zend\Mail\Address\AddressInterface');
+        $ccAddress->expects($this->once())->method('toString')->will($this->returnValue('ccEmail'));
+        $ccAddressList = $this->getMockForAbstractClass(
+            'Zend\Mail\Header\AbstractAddressList',
+            [],
+            '',
+            false,
+            false,
+            true,
+            ['getAddressList']
+        );
+        $ccAddressList->expects($this->once())->method('getAddressList')->will($this->returnValue([$ccAddress]));
+
+        $bccAddress = $this->getMock('Zend\Mail\Address\AddressInterface');
+        $bccAddress->expects($this->once())->method('toString')->will($this->returnValue('bccEmail'));
+        $bccAddressList = $this->getMockForAbstractClass(
+            'Zend\Mail\Header\AbstractAddressList',
+            [],
+            '',
+            false,
+            false,
+            true,
+            ['getAddressList']
+        );
+        $bccAddressList->expects($this->once())->method('getAddressList')->will($this->returnValue([$bccAddress]));
+
+        $this->connector->expects($this->once())
+            ->method('getUidValidity')
+            ->will($this->returnValue(456));
+        $msg = $this->getMockBuilder('Oro\Bundle\ImapBundle\Mail\Storage\Message')
+            ->disableOriginalConstructor()
+            ->getMock();
+        $headers = $this->getMockBuilder('Zend\Mail\Headers')
+            ->disableOriginalConstructor()
+            ->getMock();
+        $msg->expects($this->once())
+            ->method('getHeaders')
+            ->will($this->returnValue($headers));
+        $headers->expects($this->any())
+            ->method('get')
+            ->will(
+                $this->returnValueMap(
+                    [
+                        ['UID', $this->getHeader('123')],
+                        ['Subject', $this->getHeader('Subject')],
+                        ['From', $this->getHeader('fromEmail')],
+                        ['Date', $this->getHeader($strDate)],
+                        ['Received', $this->getHeader('by server to email; ' . str_replace('59:', '58:', $strDate))],
+                        ['InternalDate', $this->getHeader(str_replace('59:', '57:', $strDate))],
+                        ['Importance', false],
+                        ['Message-ID', $this->getHeader('MessageId')],
+                        ['X-GM-MSG-ID', $this->getHeader('XMsgId')],
+                        ['X-GM-THR-ID', $this->getHeader('XThrId')],
+                        ['X-GM-LABELS', false],
+                        ['To', $toAddressList],
+                        ['Cc', $ccAddressList],
+                        ['Bcc', $bccAddressList],
+                    ]
+                )
+            );
+
+        $query = $this->getMockBuilder('Oro\Bundle\ImapBundle\Connector\Search\SearchQuery')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $imap = $this->getMockBuilder('Oro\Bundle\ImapBundle\Mail\Storage\Imap')
+            ->disableOriginalConstructor()
+            ->getMock();
+        $imap->expects($this->any())->method('getMessage')->will($this->returnValue($msg));
+        $messageIterator = new ImapMessageIterator($imap, [1]);
+        $this->connector->expects($this->once())
+            ->method('findItems')
+            ->with($this->identicalTo($query))
+            ->will($this->returnValue($messageIterator));
+
+        $this->manager->selectFolder('Test Folder');
+        $emails = $this->manager->getEmails($query);
+
+        $this->assertCount(1, $emails);
+
+        $emails->rewind();
+        $email = $emails->current();
+        $this->assertEquals(123, $email->getId()->getUid());
+        $this->assertEquals(456, $email->getId()->getUidValidity());
+        $this->assertEquals('Subject', $email->getSubject());
+        $this->assertEquals('fromEmail', $email->getFrom());
+        $this->assertEquals(
+            new \DateTime('2011-06-30 23:59:59', new \DateTimeZone('UTC')),
+            $email->getSentAt()
+        );
+        $this->assertEquals(
+            new \DateTime('2011-06-30 23:58:59', new \DateTimeZone('UTC')),
+            $email->getReceivedAt()
+        );
+        $this->assertEquals(
+            new \DateTime('2011-06-30 23:57:59', new \DateTimeZone('UTC')),
+            $email->getInternalDate()
+        );
+        $this->assertEquals(0, $email->getImportance());
+        $this->assertEquals('MessageId', $email->getMessageId());
+        $this->assertEquals('XMsgId', $email->getXMessageId());
+        $this->assertEquals('XThrId', $email->getXThreadId());
+        $toRecipients = $email->getToRecipients();
+        $this->assertEquals('toEmail', $toRecipients[0]);
+        $ccRecipients = $email->getCcRecipients();
+        $this->assertEquals('ccEmail', $ccRecipients[0]);
+        $bccRecipients = $email->getBccRecipients();
+        $this->assertEquals('bccEmail', $bccRecipients[0]);
+    }
+
+    public function getEmailsProvider()
+    {
+        return [
+            ['Fri, 31 Jun 2011 10:59:59 +1100'],
+            ['Fri, 31 Jun 2011 10:59:59 +11:00 (GMT+11:00)'],
+            ['Fri, 31 06 2011 10:59:59 +1100'],
+        ];
+    }
+
+    /**
+     * @return HeaderInterface
+     */
+    protected function getHeader($value)
+    {
+        $header = $this->getMock('Zend\Mail\Header\HeaderInterface');
+        $header->expects($this->once())
+            ->method('getFieldValue')
+            ->will($this->returnValue($value));
+
+        return $header;
+    }
+}

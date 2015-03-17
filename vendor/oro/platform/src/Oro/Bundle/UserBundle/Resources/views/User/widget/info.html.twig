@@ -1,0 +1,109 @@
+{% import 'OroUIBundle::macros.html.twig' as ui %}
+{% import 'OroTagBundle::macros.html.twig' as tag %}
+{% import 'OroEntityConfigBundle::macros.html.twig' as entityConfig %}
+
+{% macro renderEmail(emailAddress, isPrimary) %}
+    {% import 'OroEmailBundle::macros.html.twig' as email %}
+    {% if isPrimary %}<strong>{% endif %}
+        {{ email.email_address_simple(emailAddress) }}
+    {% if isPrimary %}</strong>{% endif %}
+{% endmacro %}
+
+{% macro renderApiBlock(user, userApi, viewProfile) %}
+    {% import 'OroUIBundle::macros.html.twig' as ui %}
+    <div class="control-group api-block">
+        <label class="control-label">
+            {{ ui.tooltip('oro.user.api.tooltip_text', {}, 'bottom') }}
+            {{ 'oro.user.api.label'|trans }}
+        </label>
+        <div class="controls">
+            <div style="padding-top: 2px">
+                <span class="api-key">{{ userApi ? userApi.apiKey|escape : '' }}</span>
+                {% if viewProfile or resource_granted('EDIT', user) %}
+                    <a class="btn btn-mini no-hash" id="btn-apigen" href="{{ path('oro_user_apigen', { id: user.id }) }}"
+                       data-title="{{ 'Generate key'|trans }}" data-message="{{ 'Generate key was successful. New key:'|trans }}">
+                        {{ 'Generate key'|trans }}
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endmacro %}
+
+<div class="widget-content">
+    <div class="row-fluid form-horizontal">
+        <div class="responsive-block">
+            {{ ui.renderProperty('oro.user.username.label'|trans, entity.username) }}
+
+            {% set birthday_string %}
+                {{ entity.birthday is empty ? 'N/A'|trans : entity.birthday|oro_format_date }}
+                {% if entity.birthday is not empty %}
+                    ({{ entity.birthday|age_string({'default': 'N/A'}) }})
+                {% endif %}
+            {% endset %}
+            {{ ui.renderProperty('oro.user.birthday.label'|trans, birthday_string) }}
+
+            {% set emails = [_self.renderEmail(entity.email, true)] %}
+            {% for emailEntity in entity.emails %}
+                {% set emails = emails|merge([_self.renderEmail(emailEntity.email)]) %}
+            {% endfor %}
+            {{ ui.renderHtmlProperty('oro.user.emails.label'|trans, emails|join('<br />')) }}
+
+            {% if resource_granted('oro_user_role_view') %}
+                {% set roles = [] %}
+                {% for entityRole in entity.roles %}
+                    {% set roles = roles|merge([entityRole.label]) %}
+                {% endfor %}
+                {{ ui.renderHtmlProperty('oro.user.roles.label'|trans, roles|join('<br />')) }}
+            {% endif %}
+
+            {% if resource_granted('oro_user_group_view') %}
+                {{ ui.renderHtmlProperty('oro.user.groups.label'|trans, entity.groups|join('<br />')) }}
+            {% endif %}
+
+            {% if resource_granted('oro_business_unit_view') %}
+                {{ ui.renderHtmlProperty('oro.user.business_units.label'|trans, entity.businessUnits|join('<br />')) }}
+            {% endif %}
+
+            {{ entityConfig.renderDynamicFields(entity) }}
+        </div>
+
+        <div class="responsive-block">
+            {{ _self.renderApiBlock(entity, userApi, viewProfile) }}
+
+            {% if resource_granted('oro_tag_view_tag_cloud') %}
+                {{ ui.renderHtmlProperty('oro.tag.entity_plural_label'|trans, tag.renderView(entity)) }}
+            {% endif %}
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        require(['jquery', 'oroui/js/messenger', 'oroui/js/layout'],
+        function($, messenger, layout){
+            'use strict';
+            $(function () {
+                var message;
+                $('#btn-apigen').on('click', function (e) {
+                    var el = $(this);
+                    e.preventDefault();
+                    if (el.is('.process')) {
+                        return;
+                    }
+                    el.addClass('process');
+                    $.get(el.attr('href'), function (data) {
+                        if (message) {
+                            message.close();
+                        }
+                        el.parent().find('.api-key').text(data);
+                        var messageText = el.attr('data-message') + ' <strong>' + data + '</strong>';
+                        message = messenger.notificationFlashMessage('success', messageText);
+                        el.removeClass('process');
+                    });
+                });
+
+                layout.initPopover($('.api-block'));
+            });
+        });
+    </script>
+</div>
+

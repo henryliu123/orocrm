@@ -1,0 +1,3 @@
+oro:
+    report:
+        change_entity_confirmation: Changing the entity will erase all report filters and columns. Do you want to continue?

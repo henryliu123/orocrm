@@ -1,0 +1,457 @@
+<?php
+
+namespace Oro\Bundle\SecurityBundle\Owner;
+
+/**
+ * @SuppressWarnings(PHPMD.ExcessiveClassComplexity)
+ * This class represents a tree of owners
+ */
+class OwnerTree
+{
+    /**
+     * An associative array to store owning organization of an user
+     * key = userId
+     * value = organizationId
+     *
+     * @var array
+     */
+    protected $userOwningOrganizationId;
+
+    /**
+     * An associative array to store owning organization of a business unit
+     * key = businessUnitId
+     * value = organizationId
+     *
+     * @var array
+     */
+    protected $businessUnitOwningOrganizationId;
+
+    /**
+     * An associative array to store owning business unit of an user
+     * key = userId
+     * value = businessUnitId
+     *
+     * @var array
+     */
+    protected $userOwningBusinessUnitId;
+
+    /**
+     * An associative array to store organizations assigned to an user
+     * key = userId
+     * value = array of organizationId
+     *
+     * @var array
+     */
+    protected $userOrganizationIds;
+
+    /**
+     * An associative array to store business units assigned to an user
+     * key = userId
+     * value = array of businessUnitId
+     *
+     * @var array
+     */
+    protected $userBusinessUnitIds;
+
+    /**
+     * An associative array to store business units assigned to an user through organizations
+     * key = userId
+     * value = array:
+     *      key = organizationId
+     *      value = array of businessUnitIds
+     *
+     * @var array
+     */
+    protected $userOrganizationBusinessUnitIds;
+
+    /**
+     * An associative array to store subordinate business units
+     * key = businessUnitId
+     * value = array of businessUnitId
+     *
+     * @var array
+     */
+    protected $subordinateBusinessUnitIds;
+
+    /**
+     * An associative array to store users belong to a business unit
+     * key = businessUnitId
+     * value = array of userId
+     *
+     * @var array
+     */
+    protected $businessUnitUserIds;
+
+    /**
+     * An associative array to store users belong to a assigned business unit
+     * key = businessUnitId
+     * value = array of userId
+     *
+     * @var array
+     */
+    protected $assignedBusinessUnitUserIds;
+
+    /**
+     * An associative array to store business units belong to an organization
+     * key = organizationId
+     * value = array of businessUnitId
+     *
+     * @var array
+     */
+    protected $organizationBusinessUnitIds;
+
+    /**
+     * An associative array to store users belong to an organization
+     * key = organizationId
+     * value = array of userId
+     *
+     * @var array
+     */
+    protected $organizationUserIds;
+
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->clear();
+    }
+
+    /**
+     * The __set_state handler
+     *
+     * @param array $data Initialization array
+     * @return OwnerTree A new instance of a OwnerTree object
+     */
+    // @codingStandardsIgnoreStart
+    public static function __set_state($data)
+    {
+        $result = new OwnerTree();
+        foreach ($data as $key => $val) {
+            $result->{$key} = $val;
+        }
+
+        return $result;
+    }
+    // @codingStandardsIgnoreEnd
+
+    /**
+     * Gets the owning organization id for the given user id
+     *
+     * @param  int|string      $userId
+     * @return int|string|null
+     */
+    public function getUserOrganizationId($userId)
+    {
+        return isset($this->userOwningOrganizationId[$userId])
+            ? $this->userOwningOrganizationId[$userId]
+            : null;
+    }
+
+    /**
+     * Gets all organization ids assigned to the given user id
+     *
+     * @param  int|string      $userId
+     * @return int|string|null
+     */
+    public function getUserOrganizationIds($userId)
+    {
+        return isset($this->userOrganizationIds[$userId])
+            ? $this->userOrganizationIds[$userId]
+            : array();
+    }
+
+    /**
+     * Gets the owning business unit id for the given user id
+     *
+     * @param  int|string      $userId
+     * @return int|string|null
+     */
+    public function getUserBusinessUnitId($userId)
+    {
+        return isset($this->userOwningBusinessUnitId[$userId])
+            ? $this->userOwningBusinessUnitId[$userId]
+            : null;
+    }
+
+    /**
+     * Gets all business unit ids assigned to the given user id
+     *
+     * @param  int|string      $userId
+     * @param  int|string|null $organizationId
+     * @return array      of int|string
+     */
+    public function getUserBusinessUnitIds($userId, $organizationId = null)
+    {
+        if ($organizationId) {
+            return isset($this->userOrganizationBusinessUnitIds[$userId][$organizationId])
+                ? $this->userOrganizationBusinessUnitIds[$userId][$organizationId]
+                : array();
+        }
+
+        return isset($this->userBusinessUnitIds[$userId])
+            ? $this->userBusinessUnitIds[$userId]
+            : array();
+    }
+
+    /**
+     * Gets all users ids for the given business unit id
+     *
+     * @param  int|string $businessUnitId
+     * @return array      of int|string
+     */
+    public function getBusinessUnitUserIds($businessUnitId)
+    {
+        return isset($this->businessUnitUserIds[$businessUnitId])
+            ? $this->businessUnitUserIds[$businessUnitId]
+            : array();
+    }
+
+    /**
+     * Gets the owning organization id for the given business unit id
+     *
+     * @param  int|string      $businessUnitId
+     * @return int|string|null
+     */
+    public function getBusinessUnitOrganizationId($businessUnitId)
+    {
+        return isset($this->businessUnitOwningOrganizationId[$businessUnitId])
+            ? $this->businessUnitOwningOrganizationId[$businessUnitId]
+            : null;
+    }
+
+    /**
+     * Gets all business unit ids for the given organization id
+     *
+     * @param  int|string $organizationId
+     * @return array      of int|string
+     */
+    public function getOrganizationBusinessUnitIds($organizationId)
+    {
+        return isset($this->organizationBusinessUnitIds[$organizationId])
+            ? $this->organizationBusinessUnitIds[$organizationId]
+            : array();
+    }
+
+    /**
+     * Gets all user ids for the given organization id
+     *
+     * @param  int|string $organizationId
+     * @return array      of int|string
+     */
+    public function getOrganizationUserIds($organizationId)
+    {
+        $result = array();
+        foreach ($this->getOrganizationBusinessUnitIds($organizationId) as $buId) {
+            $userIds = $this->getBusinessUnitUserIds($buId);
+            if (!empty($userIds)) {
+                $result = array_merge($result, $userIds);
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * Gets all subordinate business unit ids for the given business unit id
+     *
+     * @param  int|string $businessUnitId
+     * @return array      of int|string
+     */
+    public function getSubordinateBusinessUnitIds($businessUnitId)
+    {
+        return isset($this->subordinateBusinessUnitIds[$businessUnitId])
+            ? $this->subordinateBusinessUnitIds[$businessUnitId]
+            : array();
+    }
+
+    /**
+     * Gets all user business unit ids with subordinate business unit ids
+     *
+     * @param  int         $userId
+     * @param  int|string  $organizationId
+     * @return array  of int|string
+     */
+    public function getUserSubordinateBusinessUnitIds($userId, $organizationId = null)
+    {
+        $buIds = $this->getUserBusinessUnitIds($userId, $organizationId);
+        $resultBuIds = array_merge($buIds, []);
+        foreach ($buIds as $buId) {
+            $diff = array_diff(
+                $this->getSubordinateBusinessUnitIds($buId),
+                $resultBuIds
+            );
+            if (!empty($diff)) {
+                $resultBuIds = array_merge($resultBuIds, $diff);
+            }
+        }
+
+        return $resultBuIds;
+    }
+
+    /**
+     * Gets all user business unit ids by user organization ids
+     *
+     * @param int $userId
+     * @return array  of int|string
+     */
+    public function getBusinessUnitsIdByUserOrganizations($userId)
+    {
+        $resultBuIds = [];
+        foreach ($this->getUserOrganizationIds($userId) as $orgId) {
+            $buIds = $this->getOrganizationBusinessUnitIds($orgId);
+            if (!empty($buIds)) {
+                $resultBuIds = array_merge($resultBuIds, $buIds);
+            }
+        }
+
+        return $resultBuIds;
+    }
+
+    /**
+     * Add the given business unit to the tree
+     *
+     * @param int|string      $businessUnitId
+     * @param int|string|null $owningOrganizationId
+     */
+    public function addBusinessUnit($businessUnitId, $owningOrganizationId)
+    {
+        $this->businessUnitOwningOrganizationId[$businessUnitId] = $owningOrganizationId;
+
+        if ($owningOrganizationId !== null) {
+            if (!isset($this->organizationBusinessUnitIds[$owningOrganizationId])) {
+                $this->organizationBusinessUnitIds[$owningOrganizationId] = array();
+            }
+            $this->organizationBusinessUnitIds[$owningOrganizationId][] = $businessUnitId;
+        }
+
+        $this->businessUnitUserIds[$businessUnitId] = array();
+        foreach ($this->userOwningBusinessUnitId as $userId => $buId) {
+            if ($businessUnitId === $buId) {
+                $this->businessUnitUserIds[$businessUnitId][] = $userId;
+                $this->userOwningOrganizationId[$userId] = $owningOrganizationId;
+            }
+        }
+    }
+
+    /**
+     * Add a business unit relation to the tree
+     *
+     * @param int|string      $businessUnitId
+     * @param int|string|null $parentBusinessUnitId
+     */
+    public function addBusinessUnitRelation($businessUnitId, $parentBusinessUnitId)
+    {
+        if ($parentBusinessUnitId !== null) {
+            foreach ($this->subordinateBusinessUnitIds as $key => $val) {
+                if (in_array($parentBusinessUnitId, $val, true)) {
+                    $this->subordinateBusinessUnitIds[$key][] = $businessUnitId;
+                }
+            }
+            if (!isset($this->subordinateBusinessUnitIds[$parentBusinessUnitId])) {
+                $this->subordinateBusinessUnitIds[$parentBusinessUnitId] = array();
+            }
+            $this->subordinateBusinessUnitIds[$parentBusinessUnitId][] = $businessUnitId;
+        }
+
+        if (!isset($this->subordinateBusinessUnitIds[$businessUnitId])) {
+            $this->subordinateBusinessUnitIds[$businessUnitId] = array();
+        }
+    }
+
+    /**
+     * Add the given user to the tree
+     *
+     * @param int|string      $userId
+     * @param int|string|null $owningBusinessUnitId
+     */
+    public function addUser($userId, $owningBusinessUnitId)
+    {
+        $this->userOwningBusinessUnitId[$userId] = $owningBusinessUnitId;
+
+        if ($owningBusinessUnitId !== null) {
+            if (isset($this->businessUnitUserIds[$owningBusinessUnitId])) {
+                $this->businessUnitUserIds[$owningBusinessUnitId][] = $userId;
+            }
+
+            $this->userOrganizationIds[$userId] = array();
+            if (isset($this->businessUnitOwningOrganizationId[$owningBusinessUnitId])) {
+                $this->userOwningOrganizationId[$userId] =
+                    $this->businessUnitOwningOrganizationId[$owningBusinessUnitId];
+            } else {
+                $this->userOwningOrganizationId[$userId] = null;
+            }
+        } else {
+            $this->userOwningOrganizationId[$userId] = null;
+            $this->userOrganizationIds[$userId] = array();
+        }
+
+        $this->userBusinessUnitIds[$userId] = array();
+        $this->userOrganizationBusinessUnitIds[$userId] = array();
+    }
+
+    /**
+     * @param $buId
+     * @return array
+     */
+    public function getUsersAssignedToBU($buId)
+    {
+        return isset($this->assignedBusinessUnitUserIds[$buId])
+            ? $this->assignedBusinessUnitUserIds[$buId]
+            : array();
+    }
+
+    /**
+     * Add a business unit to the given user
+     *
+     * @param  int|string $userId
+     * @param  int|string|null $organizationId
+     * @param  int|string $businessUnitId
+     * @throws \LogicException
+     */
+    public function addUserBusinessUnit($userId, $organizationId, $businessUnitId)
+    {
+        if (!isset($this->userOrganizationBusinessUnitIds[$userId]) || !isset($this->userBusinessUnitIds[$userId])) {
+            throw new \LogicException(sprintf('First call addUser for userId: %s.', (string)$userId));
+        }
+        if ($businessUnitId !== null) {
+            if (!isset($this->assignedBusinessUnitUserIds[$businessUnitId])) {
+                $this->assignedBusinessUnitUserIds[$businessUnitId] = [];
+            }
+            $this->assignedBusinessUnitUserIds[$businessUnitId][] = $userId;
+            $this->userBusinessUnitIds[$userId][] = $businessUnitId;
+            if (!isset($this->userOrganizationBusinessUnitIds[$userId][$organizationId])) {
+                $this->userOrganizationBusinessUnitIds[$userId][$organizationId] = [];
+            }
+            $this->userOrganizationBusinessUnitIds[$userId][$organizationId][] = $businessUnitId;
+        }
+    }
+
+    /**
+     * Add a organization to the given user
+     *
+     * @param int|string $userId
+     * @param int|string $organizationId
+     */
+    public function addUserOrganization($userId, $organizationId)
+    {
+        $this->userOrganizationIds[$userId][] = $organizationId;
+    }
+
+    /**
+     * Removes all elements from the tree
+     */
+    public function clear()
+    {
+        $this->userOwningOrganizationId = array();
+        $this->businessUnitOwningOrganizationId = array();
+        $this->organizationBusinessUnitIds = array();
+        $this->userOwningBusinessUnitId = array();
+        $this->subordinateBusinessUnitIds = array();
+        $this->userOrganizationIds = array();
+        $this->userBusinessUnitIds = array();
+        $this->businessUnitUserIds = array();
+        $this->userOrganizationBusinessUnitIds = array();
+        $this->assignedBusinessUnitUserIds = array();
+    }
+}

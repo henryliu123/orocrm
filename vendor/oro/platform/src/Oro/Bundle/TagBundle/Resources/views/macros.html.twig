@@ -1,0 +1,38 @@
+{% macro renderView(entity) %}
+    {% set tagCloudElId = 'tags-' ~ random() %}
+    <div id="{{ tagCloudElId }}">
+        <div class="tag-view">
+            {% import _self as _ %}
+            {{ _.tagSortActions() }}
+
+            <div class="tags-holder"></div>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        require(['jquery', 'orotag/js/view'],
+        function($, TagView){
+            $(function() {
+                /** @type oro.tag.View */
+                var tagView = new TagView({
+                    el: '#{{ tagCloudElId }}'
+                });
+                tagView.getCollection().reset({{ oro_tag_get_list(entity)|json_encode|raw }});
+            });
+        });
+    </script>
+{% endmacro %}
+
+{#
+    Render sort actions list
+#}
+{% macro tagSortActions() %}
+    <ul class="tag-sort-actions inline">
+        <li>
+            <a href="javascript:void(0);" class="no-hash active">{{ 'oro.tag.menu.all_tags'|trans }}</a>
+        </li>
+        <li>
+            <a href="javascript:void(0);" data-type="owner" class="no-hash">{{ 'oro.tag.menu.my_tags'|trans }}</a>
+        </li>
+    </ul>
+{% endmacro %}

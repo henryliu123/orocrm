@@ -1,0 +1,37 @@
+"Close": "Close"
+"Update": "Update"
+"Now": "Now"
+"Selected Rows": "Selected Rows"
+"All": "All"
+"Input Label": "Input Label"
+"more than": "more than"
+"less than": "less than"
+"before": "before"
+"after": "after"
+"from": "from"
+"to": "to"
+"and": "and"
+oro:
+    filter:
+        wrapper:
+            reset:
+                hint: Reset
+                tooltip: Reset this filter
+        date:
+            variable:
+                title: Available variables
+                tooltip_title: Date expressions
+                tooltip: >
+                    You can also use them to create expressions.<br/>
+                    For example:<br/>
+                    "today - 2" will be evaluated as the day before yesterday.
+            tab:
+                calendar: Calendar
+                variables: Variables
+        embedded:
+            choice:
+                field_to_value: field value
+            date:
+                field_to_value: field
+            select:
+                field_to_value: field value is

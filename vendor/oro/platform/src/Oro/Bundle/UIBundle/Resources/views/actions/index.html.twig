@@ -1,0 +1,48 @@
+{% extends bap.layout %}
+{% import 'OroUIBundle::macros.html.twig' as UI %}
+{% import 'OroDataGridBundle::macros.html.twig' as dataGrid %}
+{% set buttonsPlaceholderData = {} %}
+{% if entity_class is defined %}
+    {% set buttonsPlaceholderData = {'entity_class': entity_class} %}
+{% endif %}
+
+{% block before_content_addition %}
+    {% placeholder index_before_content_addition %}
+{% endblock before_content_addition %}
+
+{% block content %}
+    <div class="container-fluid page-title">
+        <div class="navigation clearfix navbar-extra navbar-extra-right">
+            <div class="row">
+                <div class="pull-left pull-left-extra">
+                    <div class="pull-left">
+                        <h1 class="oro-subtitle">{{ pageTitle is defined ? pageTitle : '' }}</h1>
+                    </div>
+                </div>
+                <div class="pull-right title-buttons-container">
+                    {% placeholder index_navButtons_before with buttonsPlaceholderData %}
+                    {% block navButtons %}{% endblock navButtons %}
+                    {% placeholder index_navButtons_after with buttonsPlaceholderData %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% block content_datagrid %}
+        {% if gridName is defined %}
+            {% if gridScope is defined %}
+                {% set gridName = oro_datagrid_build_fullname(gridName, gridScope) %}
+            {% endif %}
+            {% if params is defined %}
+                {{ dataGrid.renderGrid(gridName, params) }}
+            {% else %}
+                {{ dataGrid.renderGrid(gridName) }}
+            {% endif %}
+            {# Only grids on index pages will be tagged #}
+            <script type="text/javascript">
+                require(['oronavigation/js/content/grid-builder'], function (GridTagBuilder) {
+                    GridTagBuilder.allowTracking({{ gridName|json_encode|raw }});
+                });
+            </script>
+        {% endif %}
+    {% endblock content_datagrid %}
+{% endblock content %}

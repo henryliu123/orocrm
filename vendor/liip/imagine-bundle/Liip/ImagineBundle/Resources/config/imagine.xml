@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<container xmlns="http://symfony.com/schema/dic/services"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <parameters>
+
+        <!-- Utility classes -->
+
+        <parameter key="liip_imagine.filter.configuration.class">Liip\ImagineBundle\Imagine\Filter\FilterConfiguration</parameter>
+        <parameter key="liip_imagine.filter.manager.class">Liip\ImagineBundle\Imagine\Filter\FilterManager</parameter>
+        <parameter key="liip_imagine.data.manager.class">Liip\ImagineBundle\Imagine\Data\DataManager</parameter>
+        <parameter key="liip_imagine.cache.manager.class">Liip\ImagineBundle\Imagine\Cache\CacheManager</parameter>
+
+        <!-- Controller class -->
+
+        <parameter key="liip_imagine.controller.class">Liip\ImagineBundle\Controller\ImagineController</parameter>
+
+        <!-- Route loader class -->
+
+        <parameter key="liip_imagine.routing.loader.class">Liip\ImagineBundle\Routing\ImagineLoader</parameter>
+
+        <!-- Templating classes -->
+
+        <parameter key="liip_imagine.twig.extension.class">Liip\ImagineBundle\Templating\ImagineExtension</parameter>
+        <parameter key="liip_imagine.templating.helper.class">Liip\ImagineBundle\Templating\Helper\ImagineHelper</parameter>
+
+        <!-- ImagineInterface implementations -->
+
+        <parameter key="liip_imagine.gd.class">Imagine\Gd\Imagine</parameter>
+        <parameter key="liip_imagine.imagick.class">Imagine\Imagick\Imagine</parameter>
+        <parameter key="liip_imagine.gmagick.class">Imagine\Gmagick\Imagine</parameter>
+
+        <!-- Filter loaders' classes -->
+
+        <parameter key="liip_imagine.filter.loader.relative_resize.class">Liip\ImagineBundle\Imagine\Filter\Loader\RelativeResizeFilterLoader</parameter>
+        <parameter key="liip_imagine.filter.loader.resize.class">Liip\ImagineBundle\Imagine\Filter\Loader\ResizeFilterLoader</parameter>
+        <parameter key="liip_imagine.filter.loader.thumbnail.class">Liip\ImagineBundle\Imagine\Filter\Loader\ThumbnailFilterLoader</parameter>
+        <parameter key="liip_imagine.filter.loader.crop.class">Liip\ImagineBundle\Imagine\Filter\Loader\CropFilterLoader</parameter>
+        <parameter key="liip_imagine.filter.loader.paste.class">Liip\ImagineBundle\Imagine\Filter\Loader\PasteFilterLoader</parameter>
+        <parameter key="liip_imagine.filter.loader.watermark.class">Liip\ImagineBundle\Imagine\Filter\Loader\WatermarkFilterLoader</parameter>
+        <parameter key="liip_imagine.filter.loader.strip.class">Liip\ImagineBundle\Imagine\Filter\Loader\StripFilterLoader</parameter>
+        <parameter key="liip_imagine.filter.loader.background.class">Liip\ImagineBundle\Imagine\Filter\Loader\BackgroundFilterLoader</parameter>
+        <parameter key="liip_imagine.filter.loader.upscale.class">Liip\ImagineBundle\Imagine\Filter\Loader\UpscaleFilterLoader</parameter>
+
+        <!-- Data loaders' classes -->
+
+        <parameter key="liip_imagine.data.loader.filesystem.class">Liip\ImagineBundle\Imagine\Data\Loader\FileSystemLoader</parameter>
+        <parameter key="liip_imagine.data.loader.stream.class">Liip\ImagineBundle\Imagine\Data\Loader\StreamLoader</parameter>
+
+        <!-- Cache resolvers' classes -->
+
+        <parameter key="liip_imagine.cache.resolver.web_path.class">Liip\ImagineBundle\Imagine\Cache\Resolver\WebPathResolver</parameter>
+        <parameter key="liip_imagine.cache.resolver.no_cache.class">Liip\ImagineBundle\Imagine\Cache\Resolver\NoCacheResolver</parameter>
+
+        <!-- Form types -->
+
+        <parameter key="liip_imagine.form.type.image.class">Liip\ImagineBundle\Form\Type\ImageType</parameter>
+
+    </parameters>
+
+    <services>
+
+        <!-- Utility services -->
+
+        <service id="liip_imagine.filter.manager" class="%liip_imagine.filter.manager.class%">
+            <argument type="service" id="liip_imagine.filter.configuration" />
+        </service>
+
+        <service id="liip_imagine.data.manager" class="%liip_imagine.data.manager.class%">
+            <argument type="service" id="liip_imagine.filter.configuration" />
+            <argument>%liip_imagine.data.loader.default%</argument>
+        </service>
+
+        <service id="liip_imagine.cache.manager" class="%liip_imagine.cache.manager.class%">
+            <argument type="service" id="liip_imagine.filter.configuration" />
+            <argument type="service" id="router" />
+            <argument>%liip_imagine.web_root%</argument>
+            <argument>%liip_imagine.cache.resolver.default%</argument>
+        </service>
+
+        <service id="liip_imagine.filter.configuration" class="%liip_imagine.filter.configuration.class%">
+            <argument>%liip_imagine.filter_sets%</argument>
+        </service>
+
+        <!-- Controller -->
+
+        <service id="liip_imagine.controller" class="%liip_imagine.controller.class%">
+            <argument type="service" id="liip_imagine.data.manager" />
+            <argument type="service" id="liip_imagine.filter.manager" />
+            <argument type="service" id="liip_imagine.cache.manager" />
+        </service>
+
+        <!-- Route Loader -->
+
+        <service id="liip_imagine.routing.loader" class="%liip_imagine.routing.loader.class%">
+            <tag name="routing.loader" />
+            <argument>%liip_imagine.controller_action%</argument>
+            <argument>%liip_imagine.cache_prefix%</argument>
+            <argument>%liip_imagine.filter_sets%</argument>
+        </service>
+
+        <!-- ImagineInterface instances -->
+
+        <service id="liip_imagine" alias="liip_imagine.gd" />
+
+        <service id="liip_imagine.gd" class="%liip_imagine.gd.class%" public="false" />
+
+        <service id="liip_imagine.imagick" class="%liip_imagine.imagick.class%" public="false" />
+
+        <service id="liip_imagine.gmagick" class="%liip_imagine.gmagick.class%" public="false" />
+
+        <!--  Templating helpers and extensions -->
+
+        <service id="liip_imagine.twig.extension" class="%liip_imagine.twig.extension.class%" public="false">
+            <tag name="twig.extension" />
+            <argument type="service" id="liip_imagine.cache.manager" />
+        </service>
+
+        <service id="liip_imagine.templating.helper" class="%liip_imagine.templating.helper.class%">
+            <tag name="templating.helper" alias="imagine" />
+            <argument type="service" id="liip_imagine.cache.manager" />
+        </service>
+
+        <!-- Filter loaders -->
+
+        <service id="liip_imagine.filter.loader.relative_resize" class="%liip_imagine.filter.loader.relative_resize.class%">
+            <tag name="liip_imagine.filter.loader" loader="relative_resize" />
+        </service>
+
+        <service id="liip_imagine.filter.loader.resize" class="%liip_imagine.filter.loader.resize.class%">
+            <tag name="liip_imagine.filter.loader" loader="resize" />
+        </service>
+
+        <service id="liip_imagine.filter.loader.thumbnail" class="%liip_imagine.filter.loader.thumbnail.class%">
+            <tag name="liip_imagine.filter.loader" loader="thumbnail" />
+        </service>
+
+        <service id="liip_imagine.filter.loader.crop" class="%liip_imagine.filter.loader.crop.class%">
+            <tag name="liip_imagine.filter.loader" loader="crop" />
+        </service>
+
+        <service id="liip_imagine.filter.loader.paste" class="%liip_imagine.filter.loader.paste.class%">
+            <tag name="liip_imagine.filter.loader" loader="paste" />
+            <argument type="service" id="liip_imagine" />
+            <argument>%kernel.root_dir%</argument>
+        </service>
+
+        <service id="liip_imagine.filter.loader.watermark" class="%liip_imagine.filter.loader.watermark.class%">
+            <tag name="liip_imagine.filter.loader" loader="watermark" />
+            <argument type="service" id="liip_imagine" />
+            <argument>%kernel.root_dir%</argument>
+        </service>
+
+        <service id="liip_imagine.filter.loader.background" class="%liip_imagine.filter.loader.background.class%">
+            <tag name="liip_imagine.filter.loader" loader="background" />
+            <argument type="service" id="liip_imagine" />
+        </service>
+
+        <service id="liip_imagine.filter.loader.strip" class="%liip_imagine.filter.loader.strip.class%">
+            <tag name="liip_imagine.filter.loader" loader="strip" />
+        </service>
+
+        <service id="liip_imagine.filter.loader.upscale" class="%liip_imagine.filter.loader.upscale.class%">
+            <tag name="liip_imagine.filter.loader" loader="upscale" />
+        </service>
+
+        <!-- Data loaders -->
+
+        <service id="liip_imagine.data.loader.filesystem" class="%liip_imagine.data.loader.filesystem.class%">
+            <tag name="liip_imagine.data.loader" loader="filesystem" />
+            <argument type="service" id="liip_imagine" />
+            <argument>%liip_imagine.formats%</argument>
+            <argument>%liip_imagine.data_root%</argument>
+        </service>
+
+        <!-- Cache resolver -->
+
+        <service id="liip_imagine.cache.resolver.web_path" class="%liip_imagine.cache.resolver.web_path.class%">
+            <tag name="liip_imagine.cache.resolver" resolver="web_path" />
+            <argument type="service" id="filesystem" />
+            <call method="setBasePath">
+                <argument type="string">%liip_imagine.cache.resolver.base_path%</argument>
+            </call>
+            <call method="setFolderPermissions">
+                <argument type="string">%liip_imagine.cache_mkdir_mode%</argument>
+            </call>
+        </service>
+
+        <service id="liip_imagine.cache.resolver.no_cache" class="%liip_imagine.cache.resolver.no_cache.class%">
+            <tag name="liip_imagine.cache.resolver" resolver="no_cache" />
+            <argument type="service" id="filesystem" />
+        </service>
+
+        <!-- Form types -->
+
+        <service id="liip_imagine.form.type.image" class="%liip_imagine.form.type.image.class%">
+            <tag name="form.type" alias="liip_imagine_image" />
+        </service>
+
+    </services>
+</container>

@@ -1,0 +1,76 @@
+parameters:
+    oro_dataaudit.metadata.metadata_factory.class:  Oro\Bundle\DataAuditBundle\Metadata\ExtendMetadataFactory
+    oro_dataaudit.metadata.annotation_driver.class: Oro\Bundle\DataAuditBundle\Metadata\Driver\AnnotationDriver
+
+    oro_dataaudit.listener.entity_listener.class:   Oro\Bundle\DataAuditBundle\EventListener\EntityListener
+    oro_dataaudit.listener.kernel_listener.class:   Oro\Bundle\DataAuditBundle\EventListener\KernelListener
+
+    oro_dataaudit.loggable.loggable_manager.class:  Oro\Bundle\DataAuditBundle\Loggable\LoggableManager
+
+    oro_dataaudit.loggable.entity.class:            Oro\Bundle\DataAuditBundle\Entity\Audit
+
+    oro_dataaudit.event_listener.dataaudit_grid_listener.class: Oro\Bundle\DataAuditBundle\EventListener\AuditGridListener
+    oro_dataaudit.event_listener.dataaudit_history_grid_listener.class: Oro\Bundle\DataAuditBundle\EventListener\AuditHistoryGridListener
+
+    oro_dataaudit.placeholder.filter.class:         Oro\Bundle\DataAuditBundle\Placeholder\AuditableFilter
+
+    oro_dataaudit.audit.manager.api.class:                Oro\Bundle\SoapBundle\Entity\Manager\ApiEntityManager
+
+services:
+    oro_dataaudit.loggable.loggable_manager:
+        class:                                      %oro_dataaudit.loggable.loggable_manager.class%
+        arguments:
+            - %oro_dataaudit.loggable.entity.class%
+            - @oro_entity_config.provider.dataaudit
+            - @security.context.link
+
+    oro_dataaudit.metadata.metadata_factory:
+        class:                                      %oro_dataaudit.metadata.metadata_factory.class%
+        arguments:                                  [@oro_dataaudit.metadata.annotation_driver]
+        public:                                     false
+
+    oro_dataaudit.metadata.annotation_driver:
+        class:                                      %oro_dataaudit.metadata.annotation_driver.class%
+        arguments:                                  [@annotation_reader]
+        public:                                     false
+
+    oro_dataaudit.listener.entity_listener:
+        class:                                      %oro_dataaudit.listener.entity_listener.class%
+        arguments:
+            - @oro_dataaudit.loggable.loggable_manager
+            - @oro_dataaudit.metadata.metadata_factory
+        tags:
+            - { name: doctrine.event_listener, event: onFlush }
+            - { name: doctrine.event_listener, event: loadClassMetadata }
+            - { name: doctrine.event_listener, event: postPersist }
+
+    oro_dataaudit.listener.kernel_listener:
+        class:                                      %oro_dataaudit.listener.kernel_listener.class%
+        arguments:                                  [@oro_dataaudit.loggable.loggable_manager, @security.context]
+        tags:
+            - { name: kernel.event_listener, event: kernel.request , method: onKernelRequest}
+
+    oro_dataaudit.dataaudit_grid_service:
+        class: %oro_dataaudit.event_listener.dataaudit_grid_listener.class%
+        arguments:
+            - @doctrine.orm.entity_manager
+
+    oro_dataaudit.event_listener.dataaudit_history_grid_listener:
+        class: %oro_dataaudit.event_listener.dataaudit_history_grid_listener.class%
+        arguments:
+            - [objectClass, objectId]
+        tags:
+          - { name: kernel.event_listener, event: oro_datagrid.datagrid.build.after.audit-history-grid, method: onBuildAfter }
+
+    # Placeholder filter
+    oro_dataaudit.placeholder.filter:
+        class: %oro_dataaudit.placeholder.filter.class%
+        arguments:
+            - @oro_entity_config.provider.dataaudit
+
+    oro_dataaudit.audit.manager.api:
+        class: %oro_dataaudit.audit.manager.api.class%
+        parent: oro_soap.manager.entity_manager.abstract
+        arguments:
+            - %oro_dataaudit.loggable.entity.class%
+            - @doctrine.orm.entity_manager

@@ -1,0 +1,19 @@
+parameters:
+    oro_assetic.raw_configuration: ~
+    oro_assetic.configuration.class: Oro\Bundle\AsseticBundle\AssetsConfiguration
+    oro_assetic.twig_extension.class: Oro\Bundle\AsseticBundle\Twig\AsseticExtension
+
+services:
+    oro_assetic.configuration:
+          class: %oro_assetic.configuration.class%
+          arguments:
+              - @event_dispatcher
+              - %oro_assetic.raw_configuration%
+
+    oro_assetic.twig.extension:
+          class: %oro_assetic.twig_extension.class%
+          arguments:
+              - @oro_assetic.configuration
+              - @assetic.asset_factory
+          tags:
+              - { name: twig.extension }

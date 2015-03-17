@@ -1,0 +1,6 @@
+config:
+    paths:
+        'orotag/js/collection': 'bundles/orotag/js/collection.js'
+        'orotag/js/model': 'bundles/orotag/js/model.js'
+        'orotag/js/update-view': 'bundles/orotag/js/update-view.js'
+        'orotag/js/view': 'bundles/orotag/js/view.js'

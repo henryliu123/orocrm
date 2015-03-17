@@ -1,0 +1,108 @@
+@import "../../lib/bootstrap/variables";
+@import "../../lib/bootstrap/mixins";
+@import "variables";
+
+.box-sizing(@sizing: content-box ) {
+  -webkit-box-sizing: @sizing;
+  -moz-box-sizing: @sizing;
+  box-sizing: @sizing;
+}
+
+.forScreen (@size; background; @value: none) {
+  @media only screen and (max-width: @size) {
+    background: @value;
+  }
+}
+.forScreen (@size; float; @value: none) {
+  @media only screen and (max-width: @size) {
+    float: @value;
+  }
+}
+.forScreen (@size; width; @value: 100%) {
+  @media only screen and (max-width: @size) {
+    width: @value;
+  }
+}
+.forScreen (@size; height; @value: auto) {
+  @media only screen and (max-width: @size) {
+    height: @value;
+  }
+}
+.forScreen (@size; min-height; @value: initial) {
+  @media only screen and (max-width: @size) {
+    min-height: @value;
+  }
+}
+.forScreen (@size; margin; @value: 0) {
+  @media only screen and (max-width: @size) {
+    margin: @value;
+  }
+}
+.forScreen (@size; padding; @value: 0) {
+  @media only screen and (max-width: @size) {
+    padding: @value;
+  }
+}
+.forScreen (@size; padding-right; @value: 0) {
+  @media only screen and (max-width: @size) {
+    padding-right: @value;
+  }
+}
+.forScreen (@size; border-top-width; @value: 0) {
+  @media only screen and (max-width: @size) {
+    border-top-width: @value;
+  }
+}
+.forScreen (@size; @_; @value) {}
+
+.cursor (grab) {
+  cursor: url(../../../oroui/img/cursor/grab.cur), move;
+  cursor: -webkit-grab;
+  cursor: -moz-grab;
+}
+.cursor (grabbing) {
+  cursor: url(../../../oroui/img/cursor/grabbing.cur), move;
+  cursor: -webkit-grabbing;
+  cursor: -moz-grabbing;
+}
+
+#accordion {
+  .toggle () {
+    font-weight: bold;
+    padding-left: 15px;
+    background: @accordionHeadingBackgroundColor;
+    border-bottom: 1px solid darken(@accordionHeadingBackgroundColor, 5%);
+    border-top: 1px solid lighten(@accordionHeadingBackgroundColor, 5%);
+  }
+  .toggle-before () {
+    content: "\f0d7";
+    font-family: FontAwesome;
+    margin: 0 7px 0 -7px;
+    width: 10px;
+    display: inline-block;
+  }
+  .toggle-collapsed-before () {
+    content: "\f0da";
+    margin: 0 5px 0 -5px;
+  }
+  .group () {
+    .border-radius(0);
+    margin-bottom: 0;
+    border: none;
+  }
+}
+
+.horizontal-icon-menu () {
+  .dropdown-menu.pull-right {
+    padding: 0;
+    right: 33px;
+    left: auto;
+    top: -10px;
+    .nav.launchers-list {
+      padding: 0;
+      > li:first-child > a{
+        margin-left: 2px;
+      }
+    }
+  }
+}

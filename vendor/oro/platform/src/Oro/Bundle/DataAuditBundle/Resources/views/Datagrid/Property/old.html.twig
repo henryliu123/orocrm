@@ -1,0 +1,19 @@
+{% import 'OroDataAuditBundle::macros.html.twig' as dataAudit %}
+
+<ul>
+{% for fieldKey, fieldValue in value %}
+    {% if fieldKey == 'auditData' %}
+        {% if fieldValue.old|length %}
+        {% for collKey, collValue in fieldValue.old %}
+            <li>
+                <b>{{ collKey }}: </b> {{ collValue }}
+            </li>
+        {% endfor %}
+        {% endif %}
+    {% else %}
+        <li>
+            <b>{{ fieldKey }}:</b> {{ dataAudit.renderFieldValue(fieldValue.old) }}
+        </li>
+    {% endif %}
+{% endfor %}
+</ul>

@@ -1,0 +1,11 @@
+{% if entity_class is empty %}
+    {% set entity_class = oro_class_name(entity, true) %}
+{% endif %}
+<li>
+    <a class="no-hash"
+       href="{{ path(audit_path, {entity:entity_class, id:id}) }}"
+       id="view-activity-btn"
+       title="{{ 'oro.dataaudit.change_history.title'|trans({'%item%': title}) }}">
+        {{ 'oro.dataaudit.change_history'|trans }}
+    </a>
+</li>
